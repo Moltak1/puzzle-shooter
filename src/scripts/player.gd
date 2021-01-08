@@ -7,11 +7,11 @@ enum States {
 	MOVING,
 }
 
-const GRID_SIZE = 32
+const GRID_SIZE = 16
 const MAX_MOVE_TURNS = 4
 const SPEED = 100
-const MAX_GRID = Vector2(12,7)
-const MIN_GRID = Vector2(3,2)
+const MAX_GRID = Vector2(20,15)
+const MIN_GRID = Vector2(0,0)
 
 var state = States.MOVE
 var move_turns = 4
@@ -21,12 +21,14 @@ var attack = false
 var target_pos = Vector2.ZERO
 var last_pos = Vector2.ZERO
 
-onready var move_turn_sprite = $move_turn
+var move_turn_sprite := Sprite.new()
+var tilemap := TileMap.new()
 
 func _ready():
-	grid_pos = MIN_GRID
-	position = MIN_GRID * GRID_SIZE
-
+	tilemap.tile_set = TileSet.new()
+	grid_pos = position / GRID_SIZE
+	print(grid_pos)
+	
 func _process(delta):
 	update_move_turns()
 	match state:
@@ -59,21 +61,25 @@ func _unhandled_input(event):
 		attack = true
 		
 func move_grid(move):
-	check_tile(grid_pos + move)
-	if grid_pos.x + move.x >= MIN_GRID.x and grid_pos.x + move.x < MAX_GRID.x and \
-			grid_pos.y + move.y >= MIN_GRID.y and grid_pos.y + move.y < MAX_GRID.y:
-		last_pos = grid_pos * GRID_SIZE
-		grid_pos += move
-		target_pos = grid_pos * GRID_SIZE
-		move_turns -= 1
-		state = States.MOVING
+	var tile_name = check_tile(grid_pos + move)
+	if "empty" in tile_name:
+		if grid_pos.x + move.x >= MIN_GRID.x and grid_pos.x + move.x < MAX_GRID.x and \
+				grid_pos.y + move.y >= MIN_GRID.y and grid_pos.y + move.y < MAX_GRID.y:
+			last_pos = grid_pos * GRID_SIZE
+			grid_pos += move
+			target_pos = grid_pos * GRID_SIZE
+			move_turns -= 1
+			state = States.MOVING
 	return Vector2.ZERO
 	
 func update_move_turns():
-	move_turn_sprite.hide()
-	move_turn_sprite.frame = move_turns
-	if state == States.MOVE:
-		move_turn_sprite.show()
+	if move_turn_sprite:
+		move_turn_sprite.hide()
+		#move_turn_sprite.frame = move_turns
+		if state == States.MOVE:
+			move_turn_sprite.show()
 
 func check_tile(pos):
-	pass
+	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL:
+		return tilemap.tile_set.tile_get_name(tilemap.get_cellv(pos))
+	return ""

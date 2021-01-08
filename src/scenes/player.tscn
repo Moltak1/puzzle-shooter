@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/scripts/player.gd" type="Script" id=1]
 [ext_resource path="res://assets/player.png" type="Texture" id=2]
-[ext_resource path="res://assets/move_bar.png" type="Texture" id=3]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -18,9 +17,3 @@ script = ExtResource( 1 )
 [node name="sprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 1 )
 centered = false
-
-[node name="move_turn" type="Sprite" parent="."]
-position = Vector2( 16.2773, -15.0137 )
-texture = ExtResource( 3 )
-centered = false
-hframes = 5

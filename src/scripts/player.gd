@@ -1,5 +1,8 @@
 extends Node2D
 
+signal moves_remaining
+signal attack_done
+
 enum States {
 	IDLE,
 	MOVE,
@@ -8,7 +11,6 @@ enum States {
 }
 
 const GRID_SIZE = 16
-const MAX_MOVE_TURNS = 4
 const SPEED = 100
 const MAX_GRID = Vector2(20,15)
 const MIN_GRID = Vector2(0,0)
@@ -27,10 +29,8 @@ var tilemap := TileMap.new()
 func _ready():
 	tilemap.tile_set = TileSet.new()
 	grid_pos = position / GRID_SIZE
-	print(grid_pos)
 	
 func _process(delta):
-	update_move_turns()
 	match state:
 		States.MOVE:
 			if move and move_turns:
@@ -39,8 +39,8 @@ func _process(delta):
 			if attack:
 				state = States.MOVE
 				move = Vector2.ZERO
-				move_turns = MAX_MOVE_TURNS
 				attack = false
+				emit_signal("attack_done")
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
@@ -69,15 +69,10 @@ func move_grid(move):
 			grid_pos += move
 			target_pos = grid_pos * GRID_SIZE
 			move_turns -= 1
+			emit_signal("moves_remaining",move_turns)
 			state = States.MOVING
 	return Vector2.ZERO
 	
-func update_move_turns():
-	if move_turn_sprite:
-		move_turn_sprite.hide()
-		#move_turn_sprite.frame = move_turns
-		if state == States.MOVE:
-			move_turn_sprite.show()
 
 func check_tile(pos):
 	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL:

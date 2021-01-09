@@ -98,7 +98,7 @@ func bullet_done(moved):
 	attack = false
 	if moved:
 		state = States.MOVE
-		emit_signal("attack_done")
+		emit_signal("attack_done",turns)
 	else:
 		state = States.ATTACK
 

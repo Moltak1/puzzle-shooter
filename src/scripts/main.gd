@@ -1,6 +1,6 @@
 extends Node
 
-var turns = 15
+var turns = 40
 var move_remaining_h = 16
 var move_remaining_w = 8
 
@@ -35,9 +35,10 @@ func player_done_moving(moves):
 	for enemy in get_tree().get_nodes_in_group("Enemies"):
 		enemy.turn()
 
-func player_attack_done():
-	player.turns = turns
-	change_move_remaining(turns)
+func player_attack_done(moves):
+	change_move_remaining(moves)
+	for enemy in get_tree().get_nodes_in_group("Enemies"):
+		enemy.turn()
 
 func change_move_remaining(moves):
 	move_remaining.texture.region.position.x = moves * move_remaining_w

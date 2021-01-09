@@ -2,6 +2,7 @@ extends Node2D
 
 signal attack_done
 signal moving_done
+signal exit_level
 
 enum States {
 	IDLE,
@@ -13,12 +14,13 @@ enum States {
 const SPEED = 100
 
 var state = States.MOVE
-var move_turns = 4
+var turns = 4
 var move = Vector2.ZERO
 var grid_pos = Vector2.ZERO
 var attack = false
 var target_pos = Vector2.ZERO
 var last_pos = Vector2.ZERO
+var has_gun = false
 
 var tilemap := TileMap.new()
 var occupiedmap := TileMap.new()
@@ -32,7 +34,7 @@ func _ready():
 func _process(delta):
 	match state:
 		States.MOVE:
-			if move and move_turns:
+			if move and turns:
 				move = move_grid(move)
 			if attack:
 				state = States.ATTACK
@@ -48,15 +50,14 @@ func _process(delta):
 				bullet_instance.grid_pos = grid_pos
 				bullet_instance.connect("bullet_done",self,"bullet_done")
 				get_parent().add_child(bullet_instance)
-				move = Vector2.ZERO
-				attack = false
 				sprite.play("default")
+				
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
 				state = States.MOVE
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
-				emit_signal("moving_done",move_turns)
+				emit_signal("moving_done",turns)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_left"):
@@ -67,7 +68,7 @@ func _unhandled_input(event):
 		move.y = 1
 	if event.is_action_pressed("ui_up"):
 		move.y = -1
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("ui_accept") and has_gun:
 		attack = true
 		
 func move_grid(move):
@@ -79,7 +80,7 @@ func move_grid(move):
 		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
 		grid_pos += move
 		target_pos = grid_pos * Globals.GRID_SIZE
-		move_turns -= 1
+		turns -= 1
 		state = States.MOVING
 	return Vector2.ZERO
 	
@@ -90,11 +91,14 @@ func check_tile(pos):
 		return [tilemap.tile_set.tile_get_name(tilemap.get_cellv(pos)),occupied]
 	return ["",true]
 
-func bullet_done():
+func bullet_done(moved):
 	move = Vector2.ZERO
 	attack = false
-	state = States.MOVE
-	emit_signal("attack_done")
+	if moved:
+		state = States.MOVE
+		emit_signal("attack_done")
+	else:
+		state = States.ATTACK
 
 func handle_tile(tile: String):
 	var splits = tile.split("_")
@@ -104,5 +108,15 @@ func handle_tile(tile: String):
 			return true
 		"redkey":
 			tilemap.flip_cell("tile_blocked","tile_normal")
-			tilemap.change_cell(grid_pos + move,"tile_normal")
+			clear_tile()
 			return true
+		"gun":
+			clear_tile()
+			has_gun = true
+			return true
+		"exit":
+			emit_signal("exit_level")
+			return true
+
+func clear_tile():
+	tilemap.change_cell(grid_pos + move, "tile_normal")

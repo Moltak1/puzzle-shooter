@@ -34,17 +34,14 @@ func _process(delta):
 			if move:
 				move = move_grid(move)
 		States.ATTACK:
-			if attack:
-				state = States.MOVE
-				move = Vector2.ZERO
-				attack = false
-				emit_signal("attack_done")
+			emit_signal("attacked_player")
+			queue_free()
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Enemy)
 				nav.disable(grid_pos)
-				state = States.IDLE
+				state = States.ATTACK if attack else States.IDLE
 
 func move_grid(move):
 	var tile_status = check_tile(grid_pos + move)
@@ -54,9 +51,7 @@ func move_grid(move):
 		nav.enable(grid_pos)
 		grid_pos += move
 		target_pos = grid_pos * Globals.GRID_SIZE
-		state = States.MOVING
-	else:
-		state = States.IDLE
+	state = States.MOVING
 	return Vector2.ZERO
 	
 
@@ -70,8 +65,11 @@ func turn():
 	if state == States.IDLE:
 		state = States.MOVE
 		var navigation = nav.navigate(grid_pos,player.grid_pos)
+		print(navigation)
 		if navigation:
 			move = navigation[1] - grid_pos
+			if navigation.size() < 3:
+				attack = true
 
 func die():
 	occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)

@@ -4,6 +4,7 @@
 [ext_resource path="res://src/scripts/bullet.gd" type="Script" id=2]
 
 [node name="bullet" type="Node2D"]
+visible = false
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]

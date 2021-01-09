@@ -7,12 +7,16 @@ var direction = Vector2.ZERO
 var grid_pos = Vector2.ZERO
 var moving = false
 var target_pos = Vector2.ZERO
+var moved = false
 
 var occupiedmap := TileMap.new()
 
 func _ready():
 	position = grid_pos * Globals.GRID_SIZE + Globals.GRID_OFFSET
 	rotate(direction.angle())
+	if check_tile(grid_pos + direction):
+		moved = true
+		show()
 
 func _process(delta):
 	if moving:
@@ -29,10 +33,10 @@ func _process(delta):
 			for enemy in get_tree().get_nodes_in_group("Enemies"):
 				if enemy.grid_pos == grid_pos + direction:
 					enemy.die()
-					emit_signal("bullet_done")
+					emit_signal("bullet_done",moved)
 					queue_free()
 		else:
-			emit_signal("bullet_done")
+			emit_signal("bullet_done",moved)
 			queue_free()
 
 

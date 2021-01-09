@@ -1,6 +1,6 @@
 extends Node
 
-var turns = 12
+var turns = 15
 var move_remaining_h = 16
 var move_remaining_w = 8
 
@@ -12,10 +12,13 @@ onready var nav = $nav
 func _ready():
 	nav.tilemap = tilemap
 	nav.start()
+	for raised in tilemap.get_cells("tile_raised"):
+		nav.disable(raised)
 	change_move_remaining(turns)
 	player.tilemap = tilemap
 	player.occupiedmap = tilemap.occupied
 	player.turns = turns
+	player.nav = nav
 	player.connect("moving_done",self,"player_done_moving")
 	player.connect("attack_done",self,"player_attack_done")
 	player.connect("exit_level",self,"exit_level")

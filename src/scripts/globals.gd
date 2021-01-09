@@ -1,6 +1,6 @@
 extends Node
 
-const GRID_SIZE = 16
+const GRID_SIZE = 32
 const GRID_OFFSET = Vector2(GRID_SIZE/2,GRID_SIZE/2)
 
 var occupied_ids

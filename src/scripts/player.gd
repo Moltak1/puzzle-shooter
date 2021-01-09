@@ -21,9 +21,11 @@ var attack = false
 var target_pos = Vector2.ZERO
 var last_pos = Vector2.ZERO
 var has_gun = false
+var has_key = false
 
 var tilemap := TileMap.new()
 var occupiedmap := TileMap.new()
+var nav := Node.new()
 var bullet = preload("res://src/scenes/bullet.tscn")
 onready var sprite = $sprite
 
@@ -60,15 +62,15 @@ func _process(delta):
 				emit_signal("moving_done",turns)
 
 func _unhandled_input(event):
-	if event.is_action_pressed("ui_left"):
+	if event.is_action_pressed("move_left"):
 		move.x = -1
-	if event.is_action_pressed("ui_right"):
+	if event.is_action_pressed("move_right"):
 		move.x = 1
-	if event.is_action_pressed("ui_down"):
+	if event.is_action_pressed("move_down"):
 		move.y = 1
-	if event.is_action_pressed("ui_up"):
+	if event.is_action_pressed("move_up"):
 		move.y = -1
-	if event.is_action_pressed("ui_accept") and has_gun:
+	if event.is_action_pressed("attack") and has_gun:
 		attack = true
 		
 func move_grid(move):
@@ -106,8 +108,8 @@ func handle_tile(tile: String):
 	match type:
 		"normal":
 			return true
-		"redkey":
-			tilemap.flip_cell("tile_blocked","tile_normal")
+		"key":
+			has_key = true
 			clear_tile()
 			return true
 		"gun":
@@ -116,6 +118,15 @@ func handle_tile(tile: String):
 			return true
 		"exit":
 			emit_signal("exit_level")
+			return true
+		"lock":
+			if has_key:
+				clear_tile()
+				tilemap.flip_cell("tile_raised","tile_lowered")
+				for lowered in tilemap.get_cells("tile_lowered"):
+					nav.enable(lowered)
+				return true
+		"lowered":
 			return true
 
 func clear_tile():

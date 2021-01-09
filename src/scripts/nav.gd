@@ -8,7 +8,7 @@ var directions = [Vector2.UP,Vector2.DOWN,Vector2.LEFT,Vector2.RIGHT]
 onready var astar = AStar2D.new()
 
 func start():
-	tiles = tilemap.get_used_cells()
+	tiles = tilemap.not_walls
 	populate()
 	connect_tiles()
 

@@ -19,11 +19,7 @@ func _ready():
 		show()
 
 func _process(delta):
-	if moving:
-		position = position.move_toward(target_pos,SPEED * delta)
-		if position == target_pos:
-			moving = false
-	else:
+	if not moving:
 		var tile = check_tile(grid_pos + direction)
 		if tile == "empty":
 			grid_pos += direction
@@ -38,6 +34,9 @@ func _process(delta):
 		else:
 			emit_signal("bullet_done",moved)
 			queue_free()
+	position = position.move_toward(target_pos,SPEED * delta)
+	if position == target_pos:
+		moving = false
 
 
 

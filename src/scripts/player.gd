@@ -24,6 +24,8 @@ var last_pos = Vector2.ZERO
 
 var tilemap := TileMap.new()
 var occupiedmap := TileMap.new()
+var bullet = preload("res://src/scenes/bullet.tscn")
+onready var sprite = $sprite
 
 func _ready():
 	tilemap.tile_set = TileSet.new()
@@ -34,20 +36,29 @@ func _process(delta):
 		States.MOVE:
 			if move and move_turns:
 				move = move_grid(move)
-		States.ATTACK:
 			if attack:
-				state = States.MOVE
+				state = States.ATTACK
+				move = Vector2.ZERO
+				
+		States.ATTACK:
+			sprite.play("attack")
+			if move:
+				state = States.IDLE
+				var bullet_instance = bullet.instance()
+				bullet_instance.occupiedmap = occupiedmap
+				bullet_instance.direction = move
+				bullet_instance.grid_pos = grid_pos
+				bullet_instance.connect("bullet_done",self,"bullet_done")
+				get_parent().add_child(bullet_instance)
 				move = Vector2.ZERO
 				attack = false
-				emit_signal("attack_done")
+				sprite.play("default")
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
 				state = States.MOVE
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
 				emit_signal("moving_done",move_turns)
-				if move_turns == 0:
-					state = States.ATTACK
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_left"):
@@ -58,7 +69,7 @@ func _unhandled_input(event):
 		move.y = 1
 	if event.is_action_pressed("ui_up"):
 		move.y = -1
-	if event.is_action_pressed("ui_accept") and state == States.ATTACK:
+	if event.is_action_pressed("ui_accept"):
 		attack = true
 		
 func move_grid(move):
@@ -83,3 +94,8 @@ func check_tile(pos):
 		return [tilemap.tile_set.tile_get_name(tilemap.get_cellv(pos)),occupied]
 	return ["",true]
 
+func bullet_done():
+	move = Vector2.ZERO
+	attack = false
+	state = States.MOVE
+	emit_signal("attack_done")

@@ -76,4 +76,8 @@ func turn():
 		var navigation = nav.navigate(grid_pos,player.grid_pos)
 		if navigation:
 			move = navigation[1] - grid_pos
-		print(navigation)
+
+func die():
+	occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
+	nav.enable(grid_pos)
+	queue_free()

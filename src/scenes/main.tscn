@@ -1,9 +1,12 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/scenes/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/scenes/TileMap.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/scripts/main.gd" type="Script" id=3]
 [ext_resource path="res://assets/move_bar.png" type="Texture" id=4]
+[ext_resource path="res://src/scripts/nav.gd" type="Script" id=5]
+[ext_resource path="res://src/scenes/enemy.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/scripts/debug.gd" type="Script" id=7]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 4 )
@@ -29,3 +32,16 @@ texture = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="nav" type="Node" parent="."]
+script = ExtResource( 5 )
+
+[node name="enemy" parent="." instance=ExtResource( 6 )]
+position = Vector2( 272, 64 )
+
+[node name="debug" type="Node2D" parent="."]
+visible = false
+script = ExtResource( 7 )
+
+[node name="enemy2" parent="." instance=ExtResource( 6 )]
+position = Vector2( 240, 144 )

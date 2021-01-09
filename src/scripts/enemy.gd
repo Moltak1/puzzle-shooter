@@ -12,8 +12,6 @@ enum States {
 
 const SPEED = 100
 
-var max_grid = Vector2(20,15)
-var min_grid = Vector2(0,0)
 var state = States.IDLE
 var move = Vector2.ZERO
 var grid_pos = Vector2.ZERO
@@ -51,14 +49,12 @@ func _process(delta):
 func move_grid(move):
 	var tile_status = check_tile(grid_pos + move)
 	if tile_status[1] == false:
-		if grid_pos.x + move.x >= min_grid.x and grid_pos.x + move.x < max_grid.x and \
-				grid_pos.y + move.y >= min_grid.y and grid_pos.y + move.y < max_grid.y:
-			last_pos = grid_pos * Globals.GRID_SIZE
-			occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
-			nav.enable(grid_pos)
-			grid_pos += move
-			target_pos = grid_pos * Globals.GRID_SIZE
-			state = States.MOVING
+		last_pos = grid_pos * Globals.GRID_SIZE
+		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
+		nav.enable(grid_pos)
+		grid_pos += move
+		target_pos = grid_pos * Globals.GRID_SIZE
+		state = States.MOVING
 	else:
 		state = States.IDLE
 	return Vector2.ZERO

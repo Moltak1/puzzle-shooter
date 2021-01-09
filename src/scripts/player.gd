@@ -12,8 +12,6 @@ enum States {
 
 const SPEED = 100
 
-var max_grid = Vector2(20,15)
-var min_grid = Vector2(0,0)
 var state = States.MOVE
 var move_turns = 4
 var move = Vector2.ZERO
@@ -76,15 +74,13 @@ func move_grid(move):
 	var tile_name = check_tile(grid_pos + move)
 	if tile_name[1] == true:
 		return Vector2.ZERO
-	if "normal" in tile_name[0]:
-		if grid_pos.x + move.x >= min_grid.x and grid_pos.x + move.x < max_grid.x and \
-				grid_pos.y + move.y >= min_grid.y and grid_pos.y + move.y < max_grid.y:
-			last_pos = grid_pos * Globals.GRID_SIZE
-			occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
-			grid_pos += move
-			target_pos = grid_pos * Globals.GRID_SIZE
-			move_turns -= 1
-			state = States.MOVING
+	if handle_tile(tile_name[0]):
+		last_pos = grid_pos * Globals.GRID_SIZE
+		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
+		grid_pos += move
+		target_pos = grid_pos * Globals.GRID_SIZE
+		move_turns -= 1
+		state = States.MOVING
 	return Vector2.ZERO
 	
 
@@ -99,3 +95,14 @@ func bullet_done():
 	attack = false
 	state = States.MOVE
 	emit_signal("attack_done")
+
+func handle_tile(tile: String):
+	var splits = tile.split("_")
+	var type = splits[1]
+	match type:
+		"normal":
+			return true
+		"redkey":
+			tilemap.flip_cell("tile_blocked","tile_normal")
+			tilemap.change_cell(grid_pos + move,"tile_nomal")
+			return true

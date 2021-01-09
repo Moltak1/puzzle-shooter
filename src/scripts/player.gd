@@ -104,5 +104,5 @@ func handle_tile(tile: String):
 			return true
 		"redkey":
 			tilemap.flip_cell("tile_blocked","tile_normal")
-			tilemap.change_cell(grid_pos + move,"tile_nomal")
+			tilemap.change_cell(grid_pos + move,"tile_normal")
 			return true

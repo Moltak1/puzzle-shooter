@@ -2,6 +2,7 @@ extends Node2D
 
 
 signal attacked_player
+signal done_moving
 
 enum States {
 	IDLE,
@@ -27,6 +28,7 @@ var nav := Node.new()
 func _ready():
 	add_to_group("Enemies")
 	grid_pos = position / Globals.GRID_SIZE
+	target_pos = grid_pos * Globals.GRID_SIZE
 
 func _process(delta):
 	match state:
@@ -40,6 +42,7 @@ func _process(delta):
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
 				state = States.ATTACK if attack else States.IDLE
+				emit_signal("done_moving")
 
 func move_grid(move):
 	var tile_status = check_tile(grid_pos + move)
@@ -56,7 +59,7 @@ func move_grid(move):
 	
 
 func check_tile(pos):
-	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL:
+	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL and occupiedmap.get_cellv(pos) != -1:
 		var occupied = occupiedmap.tile_set.tile_get_name(occupiedmap.get_cellv(pos)) != "empty"
 		return [tilemap.tile_set.tile_get_name(tilemap.get_cellv(pos)),occupied]
 	return ["",true]
@@ -64,12 +67,13 @@ func check_tile(pos):
 func turn():
 	if state == States.IDLE:
 		var navigation = nav.navigate(grid_pos,player.grid_pos)
-		print(navigation)
 		if navigation:
 			state = States.MOVE
 			move = navigation[1] - grid_pos
-			if navigation.size() < 3:
+			if navigation.size() <= 3:
 				attack = true
+		else:
+			state = States.MOVING
 
 func die():
 	occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)

@@ -1,7 +1,6 @@
 extends Node2D
 
-signal attack_done
-signal moving_done
+signal player_turn_done
 signal exit_level
 
 enum States {
@@ -57,11 +56,12 @@ func _process(delta):
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
-				state = States.MOVE
+				state = States.IDLE
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
-				emit_signal("moving_done",turns)
+				emit_signal("player_turn_done",turns)
 
 func _unhandled_input(event):
+	move = Vector2.ZERO
 	if event.is_action_pressed("move_left"):
 		move.x = -1
 	if event.is_action_pressed("move_right"):
@@ -88,7 +88,7 @@ func move_grid(move):
 	
 
 func check_tile(pos):
-	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL:
+	if tilemap.get_cellv(pos) != tilemap.INVALID_CELL and occupiedmap.get_cellv(pos) != -1:
 		var occupied = occupiedmap.tile_set.tile_get_name(occupiedmap.get_cellv(pos)) != "empty"
 		return [tilemap.tile_set.tile_get_name(tilemap.get_cellv(pos)),occupied]
 	return ["",true]
@@ -97,8 +97,7 @@ func bullet_done(moved):
 	move = Vector2.ZERO
 	attack = false
 	if moved:
-		state = States.MOVE
-		emit_signal("attack_done",turns)
+		emit_signal("player_turn_done",turns)
 	else:
 		state = States.ATTACK
 

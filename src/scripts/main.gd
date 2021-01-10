@@ -1,8 +1,11 @@
 extends Node
 
-var turns = 40
-var move_remaining_h = 16
-var move_remaining_w = 8
+export var turns = 40
+var move_remaining_h = 55
+var move_remaining_w = 57
+var move_remaining_max = 48
+var move_remaining_count = 0
+var moves_ratio = 1
 
 onready var player = $player
 onready var tilemap = $TileMap
@@ -10,6 +13,7 @@ onready var move_remaining = $GUI/move_remaining
 onready var nav = $nav
 
 func _ready():
+	moves_ratio = float(move_remaining_max) / turns
 	nav.tilemap = tilemap
 	nav.start()
 	for raised in tilemap.get_cells("tile_raised"):
@@ -19,8 +23,7 @@ func _ready():
 	player.occupiedmap = tilemap.occupied
 	player.turns = turns
 	player.nav = nav
-	player.connect("moving_done",self,"player_done_moving")
-	player.connect("attack_done",self,"player_attack_done")
+	player.connect("player_turn_done",self,"player_turn_done")
 	player.connect("exit_level",self,"exit_level")
 	for enemy in get_tree().get_nodes_in_group("Enemies"):
 		enemy.tilemap = tilemap
@@ -30,18 +33,18 @@ func _ready():
 		enemy.connect("attacked_player",self,"attacked_player")
 	$debug.debug()
 
-func player_done_moving(moves):
-	change_move_remaining(moves)
-	for enemy in get_tree().get_nodes_in_group("Enemies"):
-		enemy.turn()
 
-func player_attack_done(moves):
+func player_turn_done(moves):
 	change_move_remaining(moves)
 	for enemy in get_tree().get_nodes_in_group("Enemies"):
 		enemy.turn()
+		yield(enemy,"done_moving")
+	player.state = player.States.MOVE
+	
 
 func change_move_remaining(moves):
-	move_remaining.texture.region.position.x = moves * move_remaining_w
+	move_remaining_count = round(moves * moves_ratio)
+	move_remaining.texture.region.position.x = (move_remaining_max - move_remaining_count) * move_remaining_w
 
 func attacked_player():
 	print("player dies here")

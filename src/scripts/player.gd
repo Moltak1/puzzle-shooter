@@ -2,6 +2,7 @@ extends Node2D
 
 signal player_turn_done
 signal exit_level
+signal p_died
 
 enum States {
 	IDLE,
@@ -21,6 +22,7 @@ var target_pos = Vector2.ZERO
 var last_pos = Vector2.ZERO
 var has_gun = false
 var has_key = false
+var exit = false
 
 var tilemap := TileMap.new()
 var occupiedmap := TileMap.new()
@@ -56,8 +58,9 @@ func _process(delta):
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
+				if exit:
+					emit_signal("exit_level")
 				state = States.IDLE
-				sprite.play("default")
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
 				emit_signal("player_turn_done",turns)
 
@@ -86,6 +89,7 @@ func move_grid(move):
 		grid_pos += move
 		target_pos = grid_pos * Globals.GRID_SIZE
 		turns -= 1
+		sprite.play("walk")
 		if move == Vector2.UP:
 			sprite.play("walk_up")
 		elif move == Vector2.DOWN:
@@ -125,7 +129,7 @@ func handle_tile(tile: String):
 			has_gun = true
 			return true
 		"exit":
-			emit_signal("exit_level")
+			exit = true
 			return true
 		"lock":
 			if has_key:
@@ -142,5 +146,14 @@ func clear_tile():
 
 
 func _on_sprite_animation_finished():
-	if sprite.animation == "attack_fire":
-		sprite.play("attack_ready")
+	match sprite.animation:
+		"attack_fire":
+			sprite.play("attack_ready")
+		"dead":
+			emit_signal("p_died")
+		"walk", "walk_up", "walk_down":
+			sprite.play("default")
+
+func die():
+	sprite.play("dead")
+	set_process(false)

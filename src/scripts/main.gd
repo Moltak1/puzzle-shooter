@@ -40,8 +40,9 @@ func _ready():
 func player_turn_done(moves):
 	change_move_remaining(moves)
 	if moves == 0:
-		print("game over")
-		get_tree().paused = true
+		$GUI/deadBackground.show()
+		$GUI/deadBackground/outOfMoves.show()
+		player.set_process(false)
 	for enemy in get_tree().get_nodes_in_group("Enemies"):
 		enemy.turn()
 		yield(enemy,"done_moving")
@@ -56,7 +57,10 @@ func change_move_remaining(moves):
 	orb_bar.texture.region.position.x = bar_moves * move_remaining_w
 
 func attacked_player():
+	player.die()
+	yield(player,("p_died"))
 	$GUI/deadBackground.show()
+	$GUI/deadBackground/youDied.show()
 	player.set_process(false)
 
 

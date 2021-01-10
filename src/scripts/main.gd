@@ -1,7 +1,6 @@
 extends Node
 
 #TURNS HAVE TO BE MULTIPLE OF 8
-export var turns = 48
 var move_remaining_h = 64
 var move_remaining_w = 64
 var move_remaining_count = 0
@@ -11,6 +10,9 @@ onready var tilemap = $TileMap
 onready var orb_wheel = $GUI/orb_wheel
 onready var orb_bar = $GUI/orb_bar
 onready var nav = $nav
+
+export var turns = 48
+export(PackedScene) var next_level
 
 func _ready():
 	nav.tilemap = tilemap
@@ -54,8 +56,16 @@ func change_move_remaining(moves):
 	orb_bar.texture.region.position.x = bar_moves * move_remaining_w
 
 func attacked_player():
-	print("player dies here")
+	$GUI/deadBackground.show()
+	player.set_process(false)
 
 
 func exit_level():
-	get_tree().quit()
+	if next_level:
+		get_tree().change_scene_to(next_level)
+	else:
+		get_tree().quit()
+
+
+func _on_restart_button_pressed():
+	get_tree().reload_current_scene()

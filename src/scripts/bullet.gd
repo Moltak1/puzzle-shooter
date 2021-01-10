@@ -16,6 +16,7 @@ func _ready():
 	rotate(direction.angle())
 	if check_tile(grid_pos + direction):
 		moved = true
+		$AudioStreamPlayer.play(0.2)
 		show()
 
 func _process(delta):

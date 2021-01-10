@@ -1,6 +1,6 @@
 extends Node
 
-#TURNS HAVE TO BE MULTIPLE OF 8
+#TURNS HAVE TO BE MULTIPLE OF 8 max of 72
 var move_remaining_h = 64
 var move_remaining_w = 64
 var move_remaining_count = 0
@@ -11,7 +11,7 @@ onready var orb_wheel = $GUI/orb_wheel
 onready var orb_bar = $GUI/orb_bar
 onready var nav = $nav
 
-export var turns = 48
+export(int, 1, 72) var turns = 48
 export(PackedScene) var next_level
 
 func _ready():

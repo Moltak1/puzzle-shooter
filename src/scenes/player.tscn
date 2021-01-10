@@ -1,8 +1,9 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://src/scripts/player.gd" type="Script" id=1]
 [ext_resource path="res://assets/player_sheet.png" type="Texture" id=2]
 [ext_resource path="res://assets/player_walk.png" type="Texture" id=3]
+[ext_resource path="res://src/scripts/playerSound.gd" type="Script" id=4]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 2 )
@@ -162,4 +163,8 @@ frames = SubResource( 26 )
 frame = 2
 playing = true
 centered = false
+
+[node name="playerSound" type="AudioStreamPlayer" parent="."]
+volume_db = -6.0
+script = ExtResource( 4 )
 [connection signal="animation_finished" from="sprite" to="." method="_on_sprite_animation_finished"]

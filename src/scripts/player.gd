@@ -29,6 +29,7 @@ var occupiedmap := TileMap.new()
 var nav := Node.new()
 var bullet = preload("res://src/scenes/bullet.tscn")
 onready var sprite = $sprite
+onready var player_sound = $playerSound
 
 func _ready():
 	tilemap.tile_set = TileSet.new()
@@ -119,26 +120,32 @@ func handle_tile(tile: String):
 	var type = splits[1]
 	match type:
 		"normal":
+			player_sound.play_sound("walk")
 			return true
 		"key":
+			player_sound.play_sound("keys")
 			has_key = true
 			clear_tile()
 			return true
 		"gun":
+			player_sound.play_sound("gun")
 			clear_tile()
 			has_gun = true
 			return true
 		"exit":
+			player_sound.play_sound("exit")
 			exit = true
 			return true
 		"lock":
 			if has_key:
+				player_sound.play_sound("lower")
 				clear_tile()
 				tilemap.flip_cell("tile_raised","tile_lowered")
 				for lowered in tilemap.get_cells("tile_lowered"):
 					nav.enable(lowered)
 				return true
 		"lowered":
+			player_sound.play_sound("walk")
 			return true
 
 func clear_tile():
@@ -155,5 +162,6 @@ func _on_sprite_animation_finished():
 			sprite.play("default")
 
 func die():
+	player_sound.play_sound("die")
 	sprite.play("dead")
 	set_process(false)

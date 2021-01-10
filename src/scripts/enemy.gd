@@ -26,6 +26,7 @@ var player := Node2D.new()
 var nav := Node.new()
 
 onready var sprite = $AnimatedSprite
+onready var sound = $enemySound
 
 func _ready():
 	add_to_group("Enemies")
@@ -49,6 +50,7 @@ func _process(delta):
 func move_grid(move):
 	var tile_status = check_tile(grid_pos + move)
 	if tile_status[1] == false:
+		sound.play_sound("walk")
 		last_pos = grid_pos * Globals.GRID_SIZE
 		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
 		nav.enable(grid_pos)
@@ -79,6 +81,8 @@ func turn():
 			state = States.MOVING
 
 func die():
+	print("die")
+	sound.play_sound("die")
 	sprite.play("dead")
 	set_process(false)
 

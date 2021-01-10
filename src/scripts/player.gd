@@ -35,14 +35,14 @@ func _ready():
 func _process(delta):
 	match state:
 		States.MOVE:
-			if move and turns:
+			if move:
 				move = move_grid(move)
 			if attack:
 				state = States.ATTACK
 				move = Vector2.ZERO
 				
 		States.ATTACK:
-			sprite.play("attack")
+			sprite.play("attack_ready")
 			if move:
 				state = States.IDLE
 				var bullet_instance = bullet.instance()
@@ -51,20 +51,23 @@ func _process(delta):
 				bullet_instance.grid_pos = grid_pos
 				bullet_instance.connect("bullet_done",self,"bullet_done")
 				get_parent().add_child(bullet_instance)
-				sprite.play("default")
+				sprite.play("attack_fire")
 				
 		States.MOVING:
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
 				state = States.IDLE
+				sprite.play("default")
 				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
 				emit_signal("player_turn_done",turns)
 
 func _unhandled_input(event):
 	move = Vector2.ZERO
 	if event.is_action_pressed("move_left"):
+		sprite.flip_h = false
 		move.x = -1
 	if event.is_action_pressed("move_right"):
+		sprite.flip_h = true
 		move.x = 1
 	if event.is_action_pressed("move_down"):
 		move.y = 1
@@ -83,6 +86,10 @@ func move_grid(move):
 		grid_pos += move
 		target_pos = grid_pos * Globals.GRID_SIZE
 		turns -= 1
+		if move == Vector2.UP:
+			sprite.play("walk_up")
+		elif move == Vector2.DOWN:
+			sprite.play("walk_down")
 		state = States.MOVING
 	return Vector2.ZERO
 	
@@ -97,6 +104,8 @@ func bullet_done(moved):
 	move = Vector2.ZERO
 	attack = false
 	if moved:
+		turns -= 1
+		sprite.play("default")
 		emit_signal("player_turn_done",turns)
 	else:
 		state = States.ATTACK
@@ -130,3 +139,8 @@ func handle_tile(tile: String):
 
 func clear_tile():
 	tilemap.change_cell(grid_pos + move, "tile_normal")
+
+
+func _on_sprite_animation_finished():
+	if sprite.animation == "attack_fire":
+		sprite.play("attack_ready")

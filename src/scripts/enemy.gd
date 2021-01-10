@@ -25,6 +25,8 @@ var occupiedmap := TileMap.new()
 var player := Node2D.new()
 var nav := Node.new()
 
+onready var sprite = $AnimatedSprite
+
 func _ready():
 	add_to_group("Enemies")
 	grid_pos = position / Globals.GRID_SIZE
@@ -36,13 +38,13 @@ func _process(delta):
 			if move:
 				move = move_grid(move)
 		States.ATTACK:
-			emit_signal("attacked_player")
-			queue_free()
+			sprite.play("attack")
 		States.MOVING:
+			emit_signal("done_moving")
 			position = position.move_toward(target_pos,SPEED * delta)
 			if position == target_pos:
+				sprite.play("default")
 				state = States.ATTACK if attack else States.IDLE
-				emit_signal("done_moving")
 
 func move_grid(move):
 	var tile_status = check_tile(grid_pos + move)
@@ -53,6 +55,7 @@ func move_grid(move):
 		grid_pos += move
 		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Enemy)
 		nav.disable(grid_pos)
+		sprite.play("walk")
 		target_pos = grid_pos * Globals.GRID_SIZE
 	state = States.MOVING
 	return Vector2.ZERO
@@ -76,6 +79,17 @@ func turn():
 			state = States.MOVING
 
 func die():
-	occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
-	nav.enable(grid_pos)
-	queue_free()
+	sprite.play("dead")
+	set_process(false)
+
+
+func _on_AnimatedSprite_animation_finished():
+	if sprite.animation == "dead":
+		sprite.play("splatter")
+	elif sprite.animation == "splatter":
+		occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Empty)
+		nav.enable(grid_pos)
+		emit_signal("done_moving")
+		queue_free()
+	elif sprite.animation == "attack":
+		emit_signal("attacked_player")

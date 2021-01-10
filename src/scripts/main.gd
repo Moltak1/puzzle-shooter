@@ -1,19 +1,18 @@
 extends Node
 
-export var turns = 40
-var move_remaining_h = 55
-var move_remaining_w = 57
-var move_remaining_max = 48
+#TURNS HAVE TO BE MULTIPLE OF 8
+export var turns = 48
+var move_remaining_h = 64
+var move_remaining_w = 64
 var move_remaining_count = 0
-var moves_ratio = 1
 
 onready var player = $player
 onready var tilemap = $TileMap
-onready var move_remaining = $GUI/move_remaining
+onready var orb_wheel = $GUI/orb_wheel
+onready var orb_bar = $GUI/orb_bar
 onready var nav = $nav
 
 func _ready():
-	moves_ratio = float(move_remaining_max) / turns
 	nav.tilemap = tilemap
 	nav.start()
 	for raised in tilemap.get_cells("tile_raised"):
@@ -31,11 +30,16 @@ func _ready():
 		enemy.nav = nav
 		enemy.player = player
 		enemy.connect("attacked_player",self,"attacked_player")
+		tilemap.occupied.set_cellv(enemy.grid_pos,Globals.occupied_ids.Enemy)
+		nav.disable(enemy.grid_pos)
 	$debug.debug()
 
 
 func player_turn_done(moves):
 	change_move_remaining(moves)
+	if moves == 0:
+		print("game over")
+		get_tree().paused = true
 	for enemy in get_tree().get_nodes_in_group("Enemies"):
 		enemy.turn()
 		yield(enemy,"done_moving")
@@ -43,8 +47,11 @@ func player_turn_done(moves):
 	
 
 func change_move_remaining(moves):
-	move_remaining_count = round(moves * moves_ratio)
-	move_remaining.texture.region.position.x = (move_remaining_max - move_remaining_count) * move_remaining_w
+	var bar_moves = (moves - 1) / 8
+	var orb_moves = moves - 8 * bar_moves
+	print(moves)
+	orb_wheel.texture.region.position.x = orb_moves * move_remaining_w
+	orb_bar.texture.region.position.x = bar_moves * move_remaining_w
 
 func attacked_player():
 	print("player dies here")

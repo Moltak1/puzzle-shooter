@@ -16,11 +16,13 @@ var gun = preload("res://assets/sounds/gun_pickup.wav")
 var exit = preload("res://assets/sounds/exit.wav")
 
 func play_sound(sound):
+	volume_db = -6
 	match sound:
 		"keys":
 			stream = keys
 			play()
 		"lower":
+			volume_db = -3
 			stream = lower
 			play()
 		"die":

@@ -48,6 +48,7 @@ func _process(delta):
 				state = States.ATTACK if attack else States.IDLE
 
 func move_grid(move):
+	sprite.flip_h = true if move == Vector2.RIGHT else false
 	var tile_status = check_tile(grid_pos + move)
 	if tile_status[1] == false:
 		sound.play_sound("walk")

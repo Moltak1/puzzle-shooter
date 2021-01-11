@@ -81,7 +81,6 @@ func turn():
 			state = States.MOVING
 
 func die():
-	print("die")
 	sound.play_sound("die")
 	sprite.play("dead")
 	set_process(false)

@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Globals="*res://src/scripts/globals.gd"
+MainAudio="*res://src/scripts/mainAudio.gd"
 
 [display]
 

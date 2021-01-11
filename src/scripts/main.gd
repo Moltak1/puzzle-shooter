@@ -11,7 +11,7 @@ onready var orb_wheel = $GUI/orb_wheel
 onready var orb_bar = $GUI/orb_bar
 onready var nav = $nav
 
-export(int, 1, 72) var turns = 48
+export(int, 1, 72) var turns = 72
 export(PackedScene) var next_level
 
 func _ready():
@@ -72,4 +72,9 @@ func exit_level():
 
 
 func _on_restart_button_pressed():
+	MainAudio.sfx_play("click")
 	get_tree().reload_current_scene()
+
+
+func _on_restartButton_mouse_entered():
+	MainAudio.sfx_play("hover")

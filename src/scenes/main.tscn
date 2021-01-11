@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://src/scenes/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/scenes/TileMap.tscn" type="PackedScene" id=2]
@@ -11,6 +11,8 @@
 [ext_resource path="res://assets/resart_button.png" type="Texture" id=9]
 [ext_resource path="res://assets/you_died.png" type="Texture" id=10]
 [ext_resource path="res://assets/out_of_moves.png" type="Texture" id=11]
+[ext_resource path="res://assets/dead.png" type="Texture" id=12]
+[ext_resource path="res://src/scenes/End.tscn" type="PackedScene" id=13]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 8 )
@@ -22,13 +24,14 @@ region = Rect2( 0, 0, 64, 64 )
 
 [node name="main" type="Node"]
 script = ExtResource( 3 )
+next_level = ExtResource( 13 )
 
 [node name="player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 32, 32 )
 z_index = 1
 
 [node name="TileMap" parent="." instance=ExtResource( 2 )]
-tile_data = PoolIntArray( 0, 8, 0, 1, 8, 0, 2, 8, 0, 3, 8, 0, 4, 8, 0, 5, 8, 0, 6, 8, 0, 7, 8, 0, 8, 8, 0, 9, 8, 0, 10, 8, 0, 11, 8, 0, 12, 8, 0, 13, 8, 0, 14, 8, 0, 65536, 8, 0, 65550, 8, 0, 131072, 8, 0, 131086, 8, 0, 196608, 8, 0, 196622, 8, 0, 262144, 8, 0, 262158, 8, 0, 327680, 8, 0, 327694, 8, 0, 393216, 8, 0, 393230, 8, 0, 458752, 8, 0, 458753, 8, 0, 458766, 8, 0, 524288, 8, 0, 524289, 8, 0, 524290, 8, 0, 524291, 8, 0, 524292, 8, 0, 524293, 8, 0, 524294, 8, 0, 524295, 8, 0, 524296, 8, 0, 524297, 8, 0, 524298, 8, 0, 524299, 8, 0, 524300, 8, 0, 524301, 8, 0, 524302, 8, 0 )
+tile_data = PoolIntArray( 0, 8, 0, 1, 8, 0, 2, 8, 0, 3, 8, 0, 4, 8, 0, 5, 8, 0, 6, 8, 0, 7, 8, 0, 8, 8, 0, 9, 8, 0, 10, 8, 0, 11, 8, 0, 12, 8, 0, 13, 8, 0, 14, 8, 0, 65536, 8, 0, 65550, 8, 0, 131072, 8, 0, 131086, 8, 0, 196608, 8, 0, 196622, 8, 0, 262144, 8, 0, 262158, 8, 0, 327680, 8, 0, 327694, 8, 0, 393216, 8, 0, 393217, 8, 0, 393218, 8, 0, 393230, 8, 0, 458754, 8, 0, 458766, 8, 0, 524290, 8, 0, 524291, 8, 0, 524292, 8, 0, 524293, 8, 0, 524294, 8, 0, 524295, 8, 0, 524296, 8, 0, 524297, 8, 0, 524298, 8, 0, 524299, 8, 0, 524300, 8, 0, 524301, 8, 0, 524302, 8, 0 )
 
 [node name="nav" type="Node" parent="."]
 script = ExtResource( 5 )
@@ -59,14 +62,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="deadBackground" type="ColorRect" parent="GUI"]
+[node name="deadBackground" type="TextureRect" parent="GUI"]
 visible = false
+anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-color = Color( 0, 0.188235, 0.231373, 0.521569 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+margin_left = -480.0
+margin_bottom = 288.0
+texture = ExtResource( 12 )
+expand = true
+stretch_mode = 5
 
 [node name="youDied" type="TextureRect" parent="GUI/deadBackground"]
 visible = false
@@ -74,9 +78,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -112.0
+margin_left = -208.0
 margin_top = -112.0
-margin_right = 100.0
+margin_right = 4.0
 margin_bottom = -13.0
 texture = ExtResource( 10 )
 
@@ -84,19 +88,20 @@ texture = ExtResource( 10 )
 visible = false
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -144.0
-margin_right = 126.0
+margin_left = -240.0
+margin_right = 30.0
 margin_bottom = 153.0
 texture = ExtResource( 11 )
 
 [node name="restartButton" type="TextureButton" parent="GUI/deadBackground"]
-margin_left = 160.0
-margin_top = 160.0
-margin_right = 306.0
-margin_bottom = 231.0
+margin_left = 32.0
+margin_top = 192.0
+margin_right = 178.0
+margin_bottom = 263.0
 texture_normal = ExtResource( 9 )
 texture_hover = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="mouse_entered" from="GUI/deadBackground/restartButton" to="." method="_on_restartButton_mouse_entered"]
 [connection signal="pressed" from="GUI/deadBackground/restartButton" to="." method="_on_restart_button_pressed"]

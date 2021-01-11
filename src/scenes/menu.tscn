@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/scripts/menu.gd" type="Script" id=1]
 [ext_resource path="res://assets/start_button.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://assets/page_art_.png" type="Texture" id=4]
 [ext_resource path="res://assets/start_button_hover.png" type="Texture" id=5]
 [ext_resource path="res://assets/exit_button_hover.png" type="Texture" id=6]
+[ext_resource path="res://src/scenes/credits.tscn" type="PackedScene" id=7]
 
 [node name="menu" type="Control"]
 anchor_right = 1.0
@@ -53,5 +54,9 @@ texture_hover = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="credits" parent="." instance=ExtResource( 7 )]
+[connection signal="mouse_entered" from="start_button" to="." method="_on_start_button_mouse_entered"]
 [connection signal="pressed" from="start_button" to="." method="_on_start_button_pressed"]
+[connection signal="mouse_entered" from="exit_button" to="." method="_on_exit_button_mouse_entered"]
 [connection signal="pressed" from="exit_button" to="." method="_on_exit_button_pressed"]

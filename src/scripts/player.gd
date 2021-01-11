@@ -61,9 +61,10 @@ func _process(delta):
 			if position == target_pos:
 				if exit:
 					emit_signal("exit_level")
-				state = States.IDLE
-				occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
-				emit_signal("player_turn_done",turns)
+				else:
+					state = States.IDLE
+					occupiedmap.set_cellv(grid_pos,Globals.occupied_ids.Player)
+					emit_signal("player_turn_done",turns)
 
 func _unhandled_input(event):
 	move = Vector2.ZERO

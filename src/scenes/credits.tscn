@@ -1,0 +1,68 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/text_border.png" type="Texture" id=1]
+[ext_resource path="res://assets/LexendDeca-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 1 )
+region_rect = Rect2( 0, 0, 15, 5 )
+margin_left = 2.0
+margin_right = 2.0
+margin_top = 2.0
+margin_bottom = 2.0
+
+[sub_resource type="DynamicFont" id=2]
+size = 10
+font_data = ExtResource( 2 )
+
+[node name="credits" type="Control"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -32.0
+margin_right = 288.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="moltak" type="Label" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -17.0
+margin_right = 128.0
+custom_styles/normal = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
+text = "Programming: Moltak"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="kindly" type="Label" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 128.0
+margin_top = -17.0
+margin_right = 256.0
+margin_bottom = -15.0
+custom_styles/normal = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
+text = "Art: Kindly_alligator"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="emperor" type="Label" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 256.0
+margin_top = -17.0
+margin_right = 384.0
+margin_bottom = -15.0
+custom_styles/normal = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
+text = "Music: Emperor monkey"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
